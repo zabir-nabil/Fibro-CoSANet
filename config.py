@@ -1,3 +1,5 @@
+# author: github/zabir-nabil
+
 class HyperP:
     def __init__(self, model_type):
         # hyperparameters

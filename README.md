@@ -11,6 +11,7 @@
 
 1. `cd data_download`
 2. `python dataset_download.py` (make sure kaggle API is set up)
+3. `unzip osic-pulmonary-fibrosis-progression.zip`
 
 ### Training
 
