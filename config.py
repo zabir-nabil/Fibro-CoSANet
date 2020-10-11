@@ -3,7 +3,7 @@
 class HyperP:
     def __init__(self, model_type):
         # hyperparameters
-        if model_type == "slope":
+        if model_type == "slope_train":
             self.seed = 1997
             self.data_folder = 'data_download'
             self.ct_tab_feature_csv = 'train_data_ct_tab.csv' # some extra features
@@ -19,3 +19,5 @@ class HyperP:
             self.n_epochs = 40
             self.batch_size = 16
             self.final_lr = 0.0002
+        elif model_type == "slope_test":
+            pass

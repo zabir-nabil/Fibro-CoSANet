@@ -26,7 +26,7 @@ from sklearn.model_selection import KFold
 
 from config import HyperP
 
-hyp = HyperP(model_type = "slope") # slope prediction
+hyp = HyperP(model_type = "slope_train") # slope prediction
 
 # seed
 seed = hyp.seed
@@ -44,7 +44,7 @@ torch.backends.cudnn.benchmark = False
 root_path = hyp.data_folder # ../input/osic-pulmonary-fibrosis-progression
 
 train = pd.read_csv(f'{root_path}/train.csv') 
-train_vol = pd.read_csv(f'{hyp.ct_}') 
+train_vol = pd.read_csv(f'{hyp.ct_tab_feature_csv}') 
 
 
 train['Volume'] = 2000.
@@ -262,6 +262,7 @@ class TabCT(nn.Module):
 
 
 from sklearn.model_selection import train_test_split 
+from sklearn.metrics import mean_squared_error
 
 # tr_p, val_p = train_test_split(P, 
 #                               shuffle=True, 
@@ -305,6 +306,14 @@ def score_avg(p, a): # patient id, predicted a
     fvc = a * (weeks_true - weeks_true[0]) + fvc_true[0]
     percent = percent_true[0] - a * abs(weeks_true - weeks_true[0])
     return score(fvc_true, fvc, percent)
+
+def rmse_avg(p, a): # patient id, predicted a
+    percent_true = train.Percent.values[train.Patient == p]
+    fvc_true = train.FVC.values[train.Patient == p]
+    weeks_true = train.Weeks.values[train.Patient == p]
+
+    fvc = a * (weeks_true - weeks_true[0]) + fvc_true[0]
+    return mean_squared_error(fvc_true, fvc, squared = False)
 
 
 # hyperparams
@@ -420,11 +429,14 @@ for model in train_models:
             print(p_test)
             print(len(p_test))
             score_v = 0.
+            rmse = 0.
             for p in p_test:
                 score_v += (score_avg(p, pred_a[p]))/len(p_test)
+                rmse += (rmse_avg(p, pred_a[p]))/len(p_test)
 
             print(f"val score: {score_v}")
             log.write(f"val score: {score_v}\n")
+            log.write(f"val rmse: {rmse}\n")
 
             if score_v <= max_score:
                 torch.save({
