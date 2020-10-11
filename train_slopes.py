@@ -22,8 +22,14 @@ from tqdm import tqdm
 # k-fold
 from sklearn.model_selection import KFold
 
+# hyperparam object
+
+from config import HyperP
+
+hyp = HyperP(model_type = "slope") # slope prediction
+
 # seed
-seed = 1997
+seed = hyp.seed
 random.seed(seed)
 os.environ['PYTHONHASHSEED'] = str(seed)
 np.random.seed(seed)
@@ -35,10 +41,10 @@ torch.backends.cudnn.benchmark = False
 
 # path 
 
-root_path = 'data_download' # ../input/osic-pulmonary-fibrosis-progression
+root_path = hyp.data_folder # ../input/osic-pulmonary-fibrosis-progression
 
 train = pd.read_csv(f'{root_path}/train.csv') 
-train_vol = pd.read_csv(f'train_data_ct_tab.csv') 
+train_vol = pd.read_csv(f'{hyp.ct_}') 
 
 
 train['Volume'] = 2000.
@@ -108,7 +114,7 @@ class OSICData(Dataset):
         self.train_data = {}
         for p in train.Patient.values:
             p_n = len(os.listdir(f'{root_path}/train/{p}/'))
-            self.train_data[p] = os.listdir(f'{root_path}/train/{p}/')[int(.15*p_n):-int(.15*p_n)] # removing first and last 15% slices
+            self.train_data[p] = os.listdir(f'{root_path}/train/{p}/')[int( hyp.strip_ct * p_n):-int( hyp.strip_ct * p_n)] # removing first and last 15% slices
     
     
     def __len__(self):
@@ -161,7 +167,7 @@ class TabCT(nn.Module):
                          'resnext50': 2048, 'resnext101': 2048, "efnb0": 1280, "efnb1": 1280, "efnb2": 1408, 
                           "efnb3": 1536, "efnb4": 1792, "efnb5": 2048, "efnb6": 2304, "efnb7": 2560}
         
-        self.n_tab = 5 # n tabular features
+        self.n_tab = hyp.n_tab # n tabular features
         
         # efficient net b0 to b7
         
@@ -283,7 +289,7 @@ from sklearn.model_selection import train_test_split
 # score calculation
 
 def score(fvc_true, fvc_pred, sigma):
-    sigma_clip = np.maximum(sigma, 70) # changed from 70, trie 66.7 too
+    sigma_clip = np.maximum(sigma, 70)
     delta = np.abs(fvc_true - fvc_pred)
     delta = np.minimum(delta, 1000)
     sq2 = np.sqrt(2)
@@ -303,19 +309,19 @@ def score_avg(p, a): # patient id, predicted a
 
 # hyperparams
 
-result_dir = "results0"
+result_dir = hyp.results_dir
 
 # training only resnet models on gpu 0
-train_models = ['resnet18', 'resnet34', 'resnet50', 'resnext50'] 
+train_models = hyp.train_models 
 
 # 'resnext101' -> seems too heavy for 1080
 # 'efnb0', 'efnb1', 'efnb2', 'efnb3', 'efnb4', 'efnb5', 'efnb6', 'efnb7'
 
 # device
-gpu = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+gpu = torch.device(f"cuda:{hyp.gpu_index}" if torch.cuda.is_available() else "cpu")
 
 
-nfold = 5 # hyper
+nfold = hyp.nfold # hyper
 
 # removing noisy data
 P = [p for p in P if p not in ['ID00011637202177653955184', 'ID00052637202186188008618']]
@@ -332,10 +338,10 @@ for model in train_models:
         p_test = np.array(P)[test_index] 
         
         osic_train = OSICData(p_train, A, TAB)
-        train_loader = DataLoader(osic_train, batch_size=4, shuffle=True, num_workers=4)
+        train_loader = DataLoader(osic_train, batch_size=hyp.batch_size, shuffle=True, num_workers=4)
 
         osic_val = OSICData(p_test, A, TAB)
-        val_loader = DataLoader(osic_val, batch_size=4, shuffle=True, num_workers=4)
+        val_loader = DataLoader(osic_val, batch_size=hyp.batch_size, shuffle=True, num_workers=4)
         
     
         tabct = TabCT(cnn = model).to(gpu)
@@ -346,9 +352,9 @@ for model in train_models:
         ifold += 1 
 
 
-        n_epochs = 40 # max 30 epochs, patience 5, find the suitable epoch number for later final training
+        n_epochs = hyp.n_epochs # max 30 epochs, patience 5, find the suitable epoch number for later final training
 
-        best_epoch = 40 # 30
+        best_epoch = n_epochs # 30
 
 
         optimizer = torch.optim.AdamW(tabct.parameters())
@@ -442,7 +448,7 @@ for model in train_models:
     tabct = TabCT(cnn = model).to(gpu)
     tabct.load_state_dict(torch.load(f"{result_dir}/{model}.tar")["model_state_dict"])
 
-    optimizer = torch.optim.AdamW(tabct.parameters(), lr = 0.0002) # very small learning rate
+    optimizer = torch.optim.AdamW(tabct.parameters(), lr = hyp.final_lr) # very small learning rate
     criterion = torch.nn.L1Loss()
 
     print(f"Final training")
