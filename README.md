@@ -16,4 +16,6 @@
 ### Training
 
 1. Set the training hyperparameters in `config.py`
-2. To train **slopes model** run `python train_slopes.py`
+2. Slope Prediction
+   * To train **slopes model** run `python train_slopes.py`
+   * trained model weights and results will be saved inside `hyp.results_dir`
