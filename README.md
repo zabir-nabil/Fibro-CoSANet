@@ -15,4 +15,4 @@
 ### Training
 
 1. Set the training hyperparameters in `config.py`
-2. To train ** slopes model ** run `python train_slopes.py`
+2. To train **slopes model** run `python train_slopes.py`
