@@ -7,7 +7,8 @@
 3. `conda activate pulmo`
 4. `conda install -c intel mkl_fft`
 5. `conda install -c intel mkl_random`
-2. `pip install -r requirements.txt`
+6. `conda install -c anaconda mkl-service`
+7. `pip install -r requirements.txt`
 
 ### Download Dataset
 
