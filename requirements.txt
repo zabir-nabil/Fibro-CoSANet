@@ -7,7 +7,7 @@ beautifulsoup4==4.6.3
 bleach==3.1.5
 blinker==1.4
 brotlipy==0.7.0
-cachetools @ file:///tmp/build/80754af9/cachetools_1596822027882/work
+cachetools # @ file:///tmp/build/80754af9/cachetools_1596822027882/work
 certifi==2020.6.20
 cffi==1.14.2
 chardet==3.0.4
@@ -15,23 +15,23 @@ click==7.1.2
 cliff==2.8.3
 cmd2==1.3.8
 colorama==0.4.3
-cryptography @ file:///tmp/build/80754af9/cryptography_1598892037289/work
+cryptography # @ file:///tmp/build/80754af9/cryptography_1598892037289/work
 cycler==0.10.0
 decorator==4.4.2
 defusedxml==0.6.0
-efficientnet @ file:///home/ml2/nabil/kag_pul/efficientnet-1.1.0
+efficientnet # @ file:///home/ml2/nabil/kag_pul/efficientnet-1.1.0
 efficientnet-pytorch==0.7.0
 entrypoints==0.3
 future==0.18.2
 gast==0.3.3
-google-auth @ file:///tmp/build/80754af9/google-auth_1598987460909/work
+google-auth # @ file:///tmp/build/80754af9/google-auth_1598987460909/work
 google-auth-oauthlib==0.4.1
 google-pasta==0.2.0
-grpcio @ file:///tmp/build/80754af9/grpcio_1597424467487/work
-h5py @ file:///tmp/build/80754af9/h5py_1593454119955/work
-idna @ file:///tmp/build/80754af9/idna_1593446292537/work
+grpcio # @ file:///tmp/build/80754af9/grpcio_1597424467487/work
+h5py # @ file:///tmp/build/80754af9/h5py_1593454119955/work
+idna # @ file:///tmp/build/80754af9/idna_1593446292537/work
 imageio==2.9.0
-importlib-metadata @ file:///tmp/build/80754af9/importlib-metadata_1593446408836/work
+importlib-metadata # @ file:///tmp/build/80754af9/importlib-metadata_1593446408836/work
 ipykernel==5.3.4
 ipython==7.17.0
 ipython-genutils==0.2.0
@@ -45,10 +45,10 @@ jupyter-client==6.1.7
 jupyter-console==6.1.0
 jupyter-core==4.6.3
 kaggle==1.5.6
-Keras-Applications @ file:///home/ml2/nabil/kag_pul/keras-team-keras-applications-3b180cb
+Keras-Applications # @ file:///home/ml2/nabil/kag_pul/keras-team-keras-applications-3b180cb
 Keras-Preprocessing==1.1.0
 kiwisolver==1.2.0
-Markdown @ file:///tmp/build/80754af9/markdown_1597433218422/work
+Markdown # @ file:///tmp/build/80754af9/markdown_1597433218422/work
 MarkupSafe==1.1.1
 matplotlib==3.3.1
 MechanicalSoup==0.8.0
@@ -60,7 +60,7 @@ nbconvert==5.6.1
 nbformat==5.0.7
 networkx==2.5
 notebook==6.1.3
-numpy @ file:///tmp/build/80754af9/numpy_and_numpy_base_1596233707986/work
+numpy # @ file:///tmp/build/80754af9/numpy_and_numpy_base_1596233707986/work
 oauthlib==3.1.0
 opencv-python==4.4.0.42
 opt-einsum==3.1.0
@@ -80,15 +80,15 @@ protobuf==3.13.0
 ptyprocess==0.6.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.7
-pycparser @ file:///tmp/build/80754af9/pycparser_1594388511720/work
+pycparser # @ file:///tmp/build/80754af9/pycparser_1594388511720/work
 pydicom==2.0.0
 Pygments==2.6.1
 PyJWT==1.7.1
-pyOpenSSL @ file:///tmp/build/80754af9/pyopenssl_1594392929924/work
+pyOpenSSL # @ file:///tmp/build/80754af9/pyopenssl_1594392929924/work
 pyparsing==2.4.7
 pyperclip==1.8.0
 pyrsistent==0.16.0
-PySocks @ file:///tmp/build/80754af9/pysocks_1594394576006/work
+PySocks # @ file:///tmp/build/80754af9/pysocks_1594394576006/work
 python-dateutil==2.8.1
 python-slugify==4.0.1
 pytorch-tabnet==1.2.0
@@ -98,13 +98,13 @@ PyYAML==5.3.1
 pyzmq==19.0.2
 qtconsole==4.7.6
 QtPy==1.9.0
-requests @ file:///tmp/build/80754af9/requests_1592841827918/work
+requests # @ file:///tmp/build/80754af9/requests_1592841827918/work
 requests-oauthlib==1.3.0
 retrying==1.3.3
-rsa @ file:///tmp/build/80754af9/rsa_1596998415516/work
+rsa # @ file:///tmp/build/80754af9/rsa_1596998415516/work
 scikit-image==0.17.2
 scikit-learn==0.23.2
-scipy @ file:///tmp/build/80754af9/scipy_1597686620742/work
+scipy # @ file:///tmp/build/80754af9/scipy_1597686620742/work
 seaborn==0.10.1
 Send2Trash==1.5.0
 six==1.15.0
@@ -127,7 +127,7 @@ tornado==6.0.4
 tqdm==4.48.2
 traitlets==4.3.3
 typeguard==2.9.1
-urllib3 @ file:///tmp/build/80754af9/urllib3_1597086586889/work
+urllib3 # @ file:///tmp/build/80754af9/urllib3_1597086586889/work
 wcwidth==0.2.5
 webencodings==0.5.1
 Werkzeug==1.0.1
