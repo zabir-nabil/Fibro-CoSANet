@@ -1,4 +1,9 @@
 from kaggle.api.kaggle_api_extended import KaggleApi
+from shutil import copyfile
+
+# move kaggle.json file
+copyfile("kaggle.json", "/root/.kaggle/kaggle.json")
+
 api = KaggleApi()
 api.authenticate()
 
