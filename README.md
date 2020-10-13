@@ -6,6 +6,7 @@
 2. `conda create -n pulmo python==3.7.5`
 3. `conda activate pulmo`
 4. `conda install -c intel mkl_fft`
+5. `conda install -c intel mkl_random`
 2. `pip install -r requirements.txt`
 
 ### Download Dataset
