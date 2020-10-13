@@ -13,8 +13,9 @@
 ### Download Dataset
 
 1. `cd data_download`
-2. `python dataset_download.py` (make sure kaggle API is set up)
-3. `unzip osic-pulmonary-fibrosis-progression.zip`
+2. `sudo cp kaggle.json /root/.kaggle/`
+3. `python dataset_download.py` (make sure kaggle API is set up)
+4. `unzip osic-pulmonary-fibrosis-progression.zip`
 
 ### Training
 
