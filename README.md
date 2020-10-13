@@ -13,7 +13,8 @@
 ### Download Dataset
 
 1. `cd data_download`
-2. Download the kaggle.json from Kaggle account. [Kaggle authentication](https://www.kaggle.com/docs/api)
+2.  Download the kaggle.json from Kaggle account. [Kaggle authentication](https://www.kaggle.com/docs/api)
+3.  Keep the kaggle.json file inside data_download folder.
 3. `sudo cp kaggle.json /root/.kaggle/`
 4. `python dataset_download.py` (make sure kaggle API is set up)
 5. `sudo apt install unzip` if not installed already
