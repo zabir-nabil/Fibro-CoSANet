@@ -370,10 +370,11 @@ for model in train_models:
         criterion = torch.nn.L1Loss()
 
         max_score = 99999999.0000 # here, max score ]= minimum score
-
+        
         for epoch in range(n_epochs):  # loop over the dataset multiple times
 
             running_loss = 0.0
+            tabct.train()
             for i, data in tqdm(enumerate(train_loader, 0)):
 
                 [x, t], a, _ = data
@@ -398,6 +399,7 @@ for model in train_models:
 
             running_loss = 0.0
             pred_a = {}
+            tabct.eval()
             for i, data in tqdm(enumerate(val_loader, 0)):
 
                 [x, t], a, pid = data
@@ -468,6 +470,7 @@ for model in train_models:
     for epoch in range(best_epoch + 2):  # loop over the dataset multiple times
 
         running_loss = 0.0
+        tabct.train()
         for i, data in tqdm(enumerate(all_loader, 0)):
 
             [x, t], a, _ = data

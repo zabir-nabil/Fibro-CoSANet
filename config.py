@@ -26,7 +26,7 @@ class HyperP:
             self.data_folder = 'data_download'
             self.ct_tab_feature_csv = 'train_data_ct_tab.csv' # some extra features
             self.strip_ct = .15 # strip this amount of ct slices before randomly choosing
-            self.n_tab = 5 # number of tabular features used
+            self.n_tab = 4 # number of tabular features used
 
             # select which models to train
             self.train_models = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'resnext50', 'resnext101', 'efnb0', 'efnb1', 'efnb2', 'efnb3', 'efnb4', 'efnb5', 'efnb6', 'efnb7'] 
@@ -37,3 +37,4 @@ class HyperP:
             self.n_epochs = 40
             self.batch_size = 16
             self.final_lr = 0.0002
+            self.loss_weight = 0.8

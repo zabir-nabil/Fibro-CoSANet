@@ -26,7 +26,7 @@ from sklearn.model_selection import KFold
 
 from config import HyperP
 
-hyp = HyperP(model_type = "slope_train") # slope prediction
+hyp = HyperP(model_type = "qreg_train") # slope prediction
 
 # seed
 seed = hyp.seed
@@ -158,7 +158,7 @@ class OSICData(Dataset):
             print('error')
         x, tab, fvc = torch.tensor(x, dtype=torch.float32), torch.tensor(tab, dtype=torch.float32), torch.tensor(fvc, dtype=torch.float32)
         tab = torch.squeeze(tab, axis=0)
-        return [x, tab], fvc
+        return [x, tab], fvc, pid
 
 
 from torchvision import models
@@ -343,22 +343,22 @@ def score_np(fvc_true, fvc_pred, sigma):
     return np.mean(metric)
 
 
-def score_avg(p, a): # patient id, predicted a
-    percent_true = train.Percent.values[train.Patient == p]
-    fvc_true = train.FVC.values[train.Patient == p]
-    weeks_true = train.Weeks.values[train.Patient == p]
+#def score_avg(p, a): # patient id, predicted a
+#    percent_true = train.Percent.values[train.Patient == p]
+#    fvc_true = train.FVC.values[train.Patient == p]
+#    weeks_true = train.Weeks.values[train.Patient == p]
 
-    fvc = a * (weeks_true - weeks_true[0]) + fvc_true[0]
-    percent = percent_true[0] - a * abs(weeks_true - weeks_true[0])
-    return score_np(fvc_true, fvc, percent)
+#    fvc = a * (weeks_true - weeks_true[0]) + fvc_true[0]
+#    percent = percent_true[0] - a * abs(weeks_true - weeks_true[0])
+#    return score_np(fvc_true, fvc, percent)
 
-def rmse_avg(p, a): # patient id, predicted a
-    percent_true = train.Percent.values[train.Patient == p]
-    fvc_true = train.FVC.values[train.Patient == p]
-    weeks_true = train.Weeks.values[train.Patient == p]
+#def rmse_avg(p, a): # patient id, predicted a
+#    percent_true = train.Percent.values[train.Patient == p]
+#    fvc_true = train.FVC.values[train.Patient == p]
+#    weeks_true = train.Weeks.values[train.Patient == p]
 
-    fvc = a * (weeks_true - weeks_true[0]) + fvc_true[0]
-    return mean_squared_error(fvc_true, fvc, squared = False)
+#    fvc = a * (weeks_true - weeks_true[0]) + fvc_true[0]
+#    return mean_squared_error(fvc_true, fvc, squared = False)
 
 
 # hyperparams
@@ -404,21 +404,26 @@ def hyb_loss(outputs,target,l):
 
 # need to edit from here
 
+# cut data
+train_data = train_data.iloc[range(100)]
+
 for model in train_models:
     log = open(f"{result_dir}/{model}.txt", "a+")
     kfold =KFold(n_splits=nfold)
     
     ifold = 0
-    for train_index, test_index in kfold.split(P):  
+    for train_index, test_index in kfold.split(train_data):  
         # print(train_index, test_index) 
 
-        p_train = np.array(P)[train_index] 
-        p_test = np.array(P)[test_index] 
+        df_train = train_data.iloc[train_index]
+        df_test = train_data.iloc[test_index]
         
-        osic_train = OSICData(p_train, A, TAB)
+        P = list(set(train_data['Patient']))
+
+        osic_train = OSICData(P, df_train)
         train_loader = DataLoader(osic_train, batch_size=hyp.batch_size, shuffle=True, num_workers=4)
 
-        osic_val = OSICData(p_test, A, TAB)
+        osic_val = OSICData(P, df_test)
         val_loader = DataLoader(osic_val, batch_size=hyp.batch_size, shuffle=True, num_workers=4)
         
     
@@ -436,12 +441,12 @@ for model in train_models:
 
 
         optimizer = torch.optim.AdamW(tabct.parameters())
-        criterion = torch.nn.L1Loss()
+        criterion = hyb_loss # torch.nn.L1Loss()
 
         max_score = 99999999.0000 # here, max score ]= minimum score
 
         for epoch in range(n_epochs):  # loop over the dataset multiple times
-
+            tabct.train()
             running_loss = 0.0
             for i, data in tqdm(enumerate(train_loader, 0)):
 
@@ -456,7 +461,7 @@ for model in train_models:
 
                 # forward + backward + optimize
                 outputs = tabct(x, t)
-                loss = criterion(outputs, a)
+                loss = criterion(outputs, a, hyp.loss_weight)
                 loss.backward()
                 optimizer.step()
 
@@ -466,7 +471,10 @@ for model in train_models:
             log.write(f"epoch {epoch+1} train: {running_loss}\n")
 
             running_loss = 0.0
-            pred_a = {}
+            score_avg = 0.0
+            rmse_avg = 0.0
+            n_batch = 0
+            tabct.eval()
             for i, data in tqdm(enumerate(val_loader, 0)):
 
                 [x, t], a, pid = data
@@ -476,16 +484,20 @@ for model in train_models:
                 a = a.to(gpu)
 
                 # forward
-                outputs = tabct(x, t)
-                loss = criterion(outputs, a)
+                outputs = tabct(x, t, pid)
+                loss = criterion(outputs, a, hyp.loss_weight)
 
-                pids = pid
-                preds_a = outputs.detach().cpu().numpy().flatten()
+                preds_fvc = outputs # .detach().cpu().numpy() # .flatten()
+                true_fvc = a # .detach().cpu().numpy() # .flatten()
 
-                for j, p_d in enumerate(pids):
-                    pred_a[p_d] = preds_a[j]
+                score_avg += score(preds_fvc, true_fvc)
 
+                
+                preds_fvc = outputs[:,1].detach().cpu().numpy().flatten()
+                true_fvc = a.detach().cpu().numpy().flatten()
 
+                rmse_avg += mean_squared_error(true_fvc, preds_fvc, squared = False)
+                n_batch += 1
 
 
                 # print statistics
@@ -493,15 +505,9 @@ for model in train_models:
             print(f"epoch {epoch+1} val: {running_loss}")
             log.write(f"epoch {epoch+1} val: {running_loss}\n")
             # score calculation
-            print(pred_a)
-            print(len(pred_a))
-            print(p_test)
-            print(len(p_test))
-            score_v = 0.
-            rmse = 0.
-            for p in p_test:
-                score_v += (score_avg(p, pred_a[p]))/len(p_test)
-                rmse += (rmse_avg(p, pred_a[p]))/len(p_test)
+
+            score_v = score_avg / n_batch
+            rmse = rmse_avg / n_batch
 
             print(f"val score: {score_v}")
             log.write(f"val score: {score_v}\n")
@@ -521,19 +527,21 @@ for model in train_models:
         torch.cuda.empty_cache()
 
     # final training with optimized setting
-    
-    osic_all = OSICData(P, A, TAB)
-    all_loader = DataLoader(osic_all, batch_size=2, shuffle=True, num_workers=4)
+    P = list(set(train_data['Patient']))
+    osic_all = OSICData(P, train_data)
+    all_loader = DataLoader(osic_all, batch_size=hyp.batch_size, shuffle=True, num_workers=4)
 
     # load the best model
     tabct = TabCT(cnn = model).to(gpu)
     tabct.load_state_dict(torch.load(f"{result_dir}/{model}.tar")["model_state_dict"])
 
     optimizer = torch.optim.AdamW(tabct.parameters(), lr = hyp.final_lr) # very small learning rate
-    criterion = torch.nn.L1Loss()
+    criterion = hyb_loss
 
     print(f"Final training")
     log.write(f"Final training\n")  
+
+    tabct.train()
     for epoch in range(best_epoch + 2):  # loop over the dataset multiple times
 
         running_loss = 0.0
@@ -550,7 +558,7 @@ for model in train_models:
 
             # forward + backward + optimize
             outputs = tabct(x, t)
-            loss = criterion(outputs, a)
+            loss = criterion(outputs, a, hyp.loss_weight)
             loss.backward()
             optimizer.step()
 
