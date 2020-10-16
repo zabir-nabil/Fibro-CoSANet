@@ -94,10 +94,13 @@ train_data = get_baseline_week(train_data)
 train_data = get_base_FVC(train_data)
 
 
+
+
 # tabular feature generation
 
 def get_tab(df):
-    vector = [(df.Age.values[0] - train.Age.values.mean()) /  train.Age.values.std()] # df.Age.values[0].mean(), df.Age.values[0].std()
+    # print(df)
+    vector = [(df.Age.values[0] - train_data.Age.values.mean()) /  train_data.Age.values.std()] # df.Age.values[0].mean(), df.Age.values[0].std()
     
     if df.Sex.values[0] == 'Male':
         vector.append(0)
@@ -113,7 +116,12 @@ def get_tab(df):
     else:
         vector.extend([1,0]) # this is useless
         
-    vector.append((df.Volume.values[0] - train.Volume.values.mean()) /  train.Volume.values.std())
+    vector.append((df.Volume.values[0] - train_data.Volume.values.mean()) /  train_data.Volume.values.std())
+    
+    vector.append((df.baseline_week.values[0] - train_data.baseline_week.values.mean()) /  train_data.baseline_week.values.std())
+    
+    vector.append((df.base_FVC.values[0] - train_data.base_FVC.values.mean()) /  train_data.base_FVC.values.std())
+    
     return np.array(vector) 
 
 
@@ -148,11 +156,13 @@ class OSICData(Dataset):
         pid = all_features[0]
         fvc = []
         fvc.append(all_features[2])
+        # print(self.train_df.iloc[[idx]])
+        feature_set = get_tab(self.train_df.iloc[[idx]])
         try:
             i = np.random.choice(self.train_data[pid], size=1)[0]
             img = get_img(f'{root_path}/train/{pid}/{i}')
             x.append(img)
-            tab.append(all_features[1:5])
+            tab.append(feature_set)
         except Exception as e:
             print(e)
             print('error')
@@ -405,11 +415,12 @@ def hyb_loss(outputs,target,l):
 # need to edit from here
 
 # cut data
-train_data = train_data.iloc[range(100)]
+if hyp.dummy_training:
+    train_data = train_data.iloc[range(hyp.dummy_train_rows)]
 
 for model in train_models:
     log = open(f"{result_dir}/{model}.txt", "a+")
-    kfold =KFold(n_splits=nfold)
+    kfold = KFold(n_splits=nfold)
     
     ifold = 0
     for train_index, test_index in kfold.split(train_data):  
@@ -582,4 +593,5 @@ for model in train_models:
 
 
 # ref: https://www.kaggle.com/miklgr500/linear-decay-based-on-resnet-cnn
+# https://www.kaggle.com/furcifer/q-regression-with-ct-tabular-features-pytorch
 # https://pytorch.org/docs/stable/index.html

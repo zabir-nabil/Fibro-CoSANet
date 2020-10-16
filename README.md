@@ -26,3 +26,6 @@
 2. Slope Prediction
    * To train **slopes model** run `python train_slopes.py`
    * trained model weights and results will be saved inside `hyp.results_dir`
+3. Quantile Regression
+   * To train **qreg model** run `python train_qreg.py`
+   * trained model weights and results will be saved inside `hyp.results_dir`
