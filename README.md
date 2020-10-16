@@ -4,7 +4,7 @@
 
 1. `git clone https://github.com/zabir-nabil/osic-pulmonary-fibrosis-progression.git`
 2. `cd osic-pulmonary-fibrosis-progression`
-3. Install Anaconda
+3. Install Anaconda [Anaconda](https://www.anaconda.com/products/individual)
 4. `conda create -n pulmo python==3.7.5`
 5. `conda activate pulmo`
 6. `conda install -c intel mkl_fft`
