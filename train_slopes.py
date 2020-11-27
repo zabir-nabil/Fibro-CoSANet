@@ -178,70 +178,72 @@ class TabCT(nn.Module):
             self.ct_cnn.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
             
             # remove the fc layer/ add a simple linear layer
-            self.ct_cnn.fc = nn.Linear(self.out_dict[cnn], 64)   # mapped to 64 dimensions, Identity()
+            self.ct_cnn.fc = nn.Linear(self.out_dict[cnn], hyp.cnn_dim)   # mapped to 64 dimensions, Identity()
             
         elif cnn == "efnb0":
             self.ct_cnn = EfficientNet.from_pretrained('efficientnet-b0')
             self.ct_cnn._conv_stem = Conv2dStaticSamePadding(1, 32, kernel_size = (3,3), stride = (2,2), 
                                                              bias = False, image_size = 512)
-            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], 64)
+            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], hyp.cnn_dim)
             self.ct_cnn._swish = nn.Identity()
         
         elif cnn == "efnb1":
             self.ct_cnn = EfficientNet.from_pretrained('efficientnet-b1')
             self.ct_cnn._conv_stem = Conv2dStaticSamePadding(1, 32, kernel_size = (3,3), stride = (2,2), 
                                                              bias = False, image_size = 512)
-            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], 64)
+            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], hyp.cnn_dim)
             self.ct_cnn._swish = nn.Identity()
 
         elif cnn == "efnb2":
             self.ct_cnn = EfficientNet.from_pretrained('efficientnet-b2')
             self.ct_cnn._conv_stem = Conv2dStaticSamePadding(1, 32, kernel_size = (3,3), stride = (2,2), 
                                                              bias = False, image_size = 512)
-            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], 64)
+            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], hyp.cnn_dim)
             self.ct_cnn._swish = nn.Identity()
         
         elif cnn == "efnb3":
             self.ct_cnn = EfficientNet.from_pretrained('efficientnet-b3')
             self.ct_cnn._conv_stem = Conv2dStaticSamePadding(1, 40, kernel_size = (3,3), stride = (2,2), 
                                                              bias = False, image_size = 512)
-            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], 64)
+            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], hyp.cnn_dim)
             self.ct_cnn._swish = nn.Identity()
         
         elif cnn == "efnb4":
             self.ct_cnn = EfficientNet.from_pretrained('efficientnet-b4')
             self.ct_cnn._conv_stem = Conv2dStaticSamePadding(1, 48, kernel_size = (3,3), stride = (2,2), 
                                                              bias = False, image_size = 512)
-            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], 64)
+            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], hyp.cnn_dim)
             self.ct_cnn._swish = nn.Identity()
         
         elif cnn == "efnb5":
             self.ct_cnn = EfficientNet.from_pretrained('efficientnet-b5')
             self.ct_cnn._conv_stem = Conv2dStaticSamePadding(1, 48, kernel_size = (3,3), stride = (2,2), 
                                                              bias = False, image_size = 512)
-            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], 64)
+            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], hyp.cnn_dim)
             self.ct_cnn._swish = nn.Identity()
         
         elif cnn == "efnb6":
             self.ct_cnn = EfficientNet.from_pretrained('efficientnet-b6')
             self.ct_cnn._conv_stem = Conv2dStaticSamePadding(1, 56, kernel_size = (3,3), stride = (2,2), 
                                                              bias = False, image_size = 512)
-            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], 64)
+            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], hyp.cnn_dim)
             self.ct_cnn._swish = nn.Identity()
         
         elif cnn == "efnb7":
             self.ct_cnn = EfficientNet.from_pretrained('efficientnet-b7')
             self.ct_cnn._conv_stem = Conv2dStaticSamePadding(1, 64, kernel_size = (3,3), stride = (2,2), 
                                                              bias = False, image_size = 512)
-            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], 64)
+            self.ct_cnn._fc = nn.Linear(self.out_dict[cnn], hyp.cnn_dim)
             self.ct_cnn._swish = nn.Identity()
         
         else:
             raise ValueError("cnn not recognized")
         
-        self.dropout = nn.Dropout(p=0.2)
+        self.dropout = nn.Dropout(p=0.25)
         
-        self.fc = nn.Linear(64 + self.n_tab, 1)
+        self.fc_inter = nn.Linear(hyp.cnn_dim + self.n_tab, hyp.fc_dim)
+
+        self.fc = nn.Linear(hyp.fc_dim, 1)
         
     def forward(self, x_ct, x_tab):
         ct_f = self.ct_cnn(x_ct) # ct features
@@ -256,6 +258,8 @@ class TabCT(nn.Module):
         if self.training:
              x = self.dropout(x)
                 
+        x = self.fc_inter(x)
+
         x = self.fc(x)
         
         return x
