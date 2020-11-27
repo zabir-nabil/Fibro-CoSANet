@@ -1,0 +1,1 @@
+cd data_download; python dataset_download.py; unzip osic-pulmonary-fibrosis-progression.zip; cd ../; python train_slopes.py
