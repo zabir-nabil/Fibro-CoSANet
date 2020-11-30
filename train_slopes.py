@@ -33,7 +33,7 @@ seed = hyp.seed
 random.seed(seed)
 os.environ['PYTHONHASHSEED'] = str(seed)
 np.random.seed(seed)
-tf.random.set_seed(seed)
+# tf.random.set_seed(seed)
 torch.manual_seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
@@ -351,10 +351,10 @@ for model in train_models:
         p_test = np.array(P)[test_index] 
         
         osic_train = OSICData(p_train, A, TAB)
-        train_loader = DataLoader(osic_train, batch_size=hyp.batch_size, shuffle=True, num_workers=4)
+        train_loader = DataLoader(osic_train, batch_size=hyp.batch_size, shuffle=True, num_workers=hyp.num_workers)
 
         osic_val = OSICData(p_test, A, TAB)
-        val_loader = DataLoader(osic_val, batch_size=hyp.batch_size, shuffle=True, num_workers=4)
+        val_loader = DataLoader(osic_val, batch_size=hyp.batch_size, shuffle=True, num_workers=hyp.num_workers)
         
     
         tabct = TabCT(cnn = model).to(gpu)
@@ -460,7 +460,7 @@ for model in train_models:
     # final training with optimized setting
     
     osic_all = OSICData(P, A, TAB)
-    all_loader = DataLoader(osic_all, batch_size=2, shuffle=True, num_workers=4)
+    all_loader = DataLoader(osic_all, batch_size=2, shuffle=True, num_workers=hyp.num_workers)
 
     # load the best model
     tabct = TabCT(cnn = model).to(gpu)

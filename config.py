@@ -18,6 +18,7 @@ class HyperP:
             self.train_models = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'resnext50', 'resnext101', 'efnb0', 'efnb1', 'efnb2', 'efnb3', 'efnb4', 'efnb5', 'efnb6', 'efnb7'] 
 
             self.gpu_index = 0
+            self.num_workers = 0 # 0 for bug fix/docker
             self.results_dir = "results_slopes"
             self.nfold = 5
             self.n_epochs = 40
