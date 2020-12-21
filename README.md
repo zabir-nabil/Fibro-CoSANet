@@ -7,21 +7,20 @@
 3. Install Anaconda [Anaconda](https://www.anaconda.com/products/individual)
 4. `conda create -n pulmo python==3.7.5`
 5. `conda activate pulmo`
-6. `conda install -c intel mkl_fft`
-7. `conda install -c intel mkl_random`
-8. `conda install -c anaconda mkl-service`
+6. `conda install -c intel mkl_fft` (opt.)
+7. `conda install -c intel mkl_random` (opt.)
+8. `conda install -c anaconda mkl-service` (opt.)
 9. `pip install -r requirements.txt`
 
 ### Download Dataset
 
-1. `cd data_download`
-2.  Download the kaggle.json from Kaggle account. [Kaggle authentication](https://www.kaggle.com/docs/api)
-3.  Keep the kaggle.json file inside data_download folder.
-4. `sudo mkdir /root/.kaggle`
-5. `sudo cp kaggle.json /root/.kaggle/`
-6. `python dataset_download.py` (make sure kaggle API is set up)
-7. `sudo apt install unzip` if not installed already
-8. `unzip osic-pulmonary-fibrosis-progression.zip` 
+1.  Download the kaggle.json from Kaggle account. [Kaggle authentication](https://www.kaggle.com/docs/api)
+2.  Keep the kaggle.json file inside data_download folder.
+3. `sudo mkdir /root/.kaggle`
+4. `sudo cp kaggle.json /root/.kaggle/`
+5. `sudo apt install unzip` if not installed already
+
+`cd data_download; python dataset_download.py; mv osic-pulmonary-fibrosis-progression.zip ../../; unzip ../../osic-pulmonary-fibrosis-progression.zip; cd ../; python train_slopes.py`
 
 ### Training
 
