@@ -5,7 +5,7 @@ class HyperP:
         # hyperparameters
         if model_type == "slope_train":
             self.seed = 1997
-            self.data_folder = 'data_download'
+            self.data_folder = '..' # one level up
             self.ct_tab_feature_csv = 'train_data_ct_tab.csv' # some extra features
             self.strip_ct = .15 # strip this amount of ct slices before randomly choosing
             self.n_tab = 5 # number of tabular features used
