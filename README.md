@@ -31,3 +31,9 @@
 3. Quantile Regression
    * To train **qreg model** run `python train_qreg.py`
    * trained model weights and results will be saved inside `hyp.results_dir`
+
+### Results
+
+1. Slope model [all results](https://drive.google.com/drive/folders/1nV8Cc4u-YFSDxTtjJoUXxsh-k7A21Z73?usp=sharing)
+
+
