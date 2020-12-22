@@ -20,7 +20,7 @@
 4. `sudo cp kaggle.json /root/.kaggle/`
 5. `sudo apt install unzip` if not installed already
 
- * `cd data_download; python dataset_download.py; mv osic-pulmonary-fibrosis-progression.zip ../../; unzip ../../osic-pulmonary-fibrosis-progression.zip; cd ../; python train_slopes.py`
+ * `cd data_download; python dataset_download.py; mv osic-pulmonary-fibrosis-progression.zip ../../; unzip ../../osic-pulmonary-fibrosis-progression.zip -d ../../; cd ../; python train_slopes.py`
 
 ### Training
 
