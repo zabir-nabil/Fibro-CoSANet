@@ -26,7 +26,7 @@ from sklearn.model_selection import KFold
 
 from config import HyperP
 
-hyp = HyperP(model_type = "slope_train") # slope prediction
+hyp = HyperP(model_type = "attn_train") # slope prediction
 
 # seed
 seed = hyp.seed
@@ -203,6 +203,9 @@ class TabCT(nn.Module):
                           "efnb3": 1536, "efnb4": 1792, "efnb5": 2048, "efnb6": 2304, "efnb7": 2560}
         
         self.n_tab = hyp.n_tab # n tabular features
+        self.attn_filters = attn_filters
+        self.fc_dim = fc_dim
+        self.n_attn_layers = n_attn_layers
         
         # efficient net b2 base
 
@@ -214,7 +217,7 @@ class TabCT(nn.Module):
            
             # replace avg_pool layer
             # 1408 is the number of filters in last conv
-            self.ct_cnn._avg_pooling = Conv2dStaticSamePadding(1408, attn_filters, kernel_size = (1,1), stride = (1,1), 
+            self.ct_cnn._avg_pooling = Conv2dStaticSamePadding(1408, self.attn_filters, kernel_size = (1,1), stride = (1,1), 
                                                  bias = False, image_size = 512)
             self.ct_cnn._dropout = nn.Identity()
             self.ct_cnn._fc = nn.Identity()
@@ -223,8 +226,8 @@ class TabCT(nn.Module):
             # 1 self attn layer [stacked]
             self.attn = nn.ModuleList()
             
-            for _ in range(hyp.n_attn_layers):
-                self.attn.append(Self_Attn(attn_filters))
+            for _ in range(self.n_attn_layers):
+                self.attn.append(Self_Attn(self.attn_filters))
             
                 
         else:
@@ -234,18 +237,18 @@ class TabCT(nn.Module):
         
         self.dropout = nn.Dropout(p=0.25)
         
-        self.fc_inter = nn.Linear(attn_filters + self.n_tab, fc_dim)
+        self.fc_inter = nn.Linear(self.attn_filters + self.n_tab, self.fc_dim)
 
-        self.fc = nn.Linear(fc_dim, 1)
+        self.fc = nn.Linear(self.fc_dim, 1)
         
     def forward(self, x_ct, x_tab):
-        ct_f = self.ct_cnn(x_ct).view(-1, attn_filters, 16, 16) # ct features
+        ct_f = self.ct_cnn(x_ct).view(-1, self.attn_filters, 16, 16) # ct features
         #print(ct_f.shape)
         
         for ii in range(len(self.attn)):
             ct_f = self.attn[ii](ct_f)
         #print(ct_f.shape)
-        ct_f = self.avgpool(ct_f).view(-1, attn_filters)
+        ct_f = self.avgpool(ct_f).view(-1, self.attn_filters)
         #print(ct_f.shape)
         # print(x_tab.shape)
         
@@ -428,7 +431,7 @@ for model in train_models:
                                 'model_state_dict': tabct.state_dict(),
                                 'optimizer_state_dict': optimizer.state_dict(),
                                 'score': score_v
-                                }, f"{result_dir}/{model}.tar")
+                                }, f"{result_dir}/{model}_fd_{fd}_af_{af}_nal_{nal}.tar")
                             max_score = score_v
                             best_epoch = epoch + 1
                     # destroy model
