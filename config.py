@@ -55,7 +55,7 @@ class HyperP:
 
             # self.cnn_dim = 32 # compressed cnn feature dim
 
-            self.fc_dim = [8, 16, 32]
+            self.fc_dim = [16, 32]
 
             # select which models to train
             self.train_models = ['efnb2_attn'] 
@@ -65,9 +65,9 @@ class HyperP:
             self.results_dir = "results_attn"
             self.nfold = 5
             self.n_epochs = 40
-            self.batch_size = 16
+            self.batch_size = 10
             self.final_lr = 0.0002
 
-            self.attn_filters = [8, 16, 32, 64, 128, 256, 512] # attn_filters and cnn_dim should be same
+            self.attn_filters = [32, 64, 128] # attn_filters and cnn_dim should be same
 
-            self.n_attn_layers = [1, 2, 3, 4]
+            self.n_attn_layers = [1, 2, 3]
