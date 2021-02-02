@@ -97,6 +97,6 @@ class HyperP:
             self.batch_size = 10
             self.final_lr = 0.0002
 
-            self.attn_filters = [32, 128] # attn_filters and cnn_dim should be same
+            self.attn_filters = [32] # [32, 128] # attn_filters and cnn_dim should be same
 
-            self.n_attn_layers = [3, 5]
+            self.n_attn_layers = [3]

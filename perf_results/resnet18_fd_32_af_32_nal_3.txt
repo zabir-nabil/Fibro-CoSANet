@@ -1,0 +1,2 @@
+macs : 9.11 GMac params : 11.19 M
+infer: 0.6700435730000001

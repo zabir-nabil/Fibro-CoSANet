@@ -1,0 +1,2 @@
+macs : 85.84 GMac params : 86.81 M
+infer: 0.6952471045999999
