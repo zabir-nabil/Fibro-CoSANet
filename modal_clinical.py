@@ -27,7 +27,7 @@ from sklearn.model_selection import KFold
 
 from config import HyperP
 
-hyp = HyperP(model_type = "attn_train_best_config") # slope prediction
+hyp = HyperP(model_type = "singlemodal_clinical") # slope prediction
 
 # seed
 seed = hyp.seed
@@ -154,6 +154,11 @@ from torch import nn
 class TabCT(nn.Module):
     def __init__(self, cnn, attn_filters, fc_dim, n_attn_layers):
         super(TabCT, self).__init__()
+
+        self.n_tab = hyp.n_tab # n tabular features
+        self.attn_filters = attn_filters
+        self.fc_dim = fc_dim
+        self.n_attn_layers = n_attn_layers
 
         
         self.fc_inter = nn.Linear(self.n_tab, self.fc_dim)
