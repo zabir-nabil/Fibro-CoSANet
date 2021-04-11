@@ -1,4 +1,4 @@
-# osic-pulmonary-fibrosis-progression
+# Fibro-CoSANet: Pulmonary Fibrosis Prognosis Prediction using a Convolutional Self Attention Network
 
 ### Installation
 
@@ -32,8 +32,6 @@
    * To train **qreg model** run `python train_qreg.py`
    * trained model weights and results will be saved inside `hyp.results_dir`
 
-### Results
-
-1. Slope model [all results](https://drive.google.com/drive/folders/1nV8Cc4u-YFSDxTtjJoUXxsh-k7A21Z73?usp=sharing)
+* Volume calculation: https://www.kaggle.com/furcifer/q-regression-with-ct-tabular-features-pytorch
 
 
