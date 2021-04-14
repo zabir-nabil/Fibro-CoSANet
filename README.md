@@ -35,3 +35,8 @@
 * Volume calculation: https://www.kaggle.com/furcifer/q-regression-with-ct-tabular-features-pytorch
 
 
+### Arxiv pre-print
+
+https://arxiv.org/abs/2104.05889
+
+
